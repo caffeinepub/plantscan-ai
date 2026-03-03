@@ -1,0 +1,281 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== FONT FACES ===== */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/assets/fonts/BricolageGrotesque-Variable.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/assets/fonts/GeneralSans-Variable.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/assets/fonts/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ===== DESIGN TOKENS: PlantScan AI ===== */
+/* Direction: Botanical Laboratory — precise, scientific, alive
+   Palette: Deep forest green primary + warm amber accent + clean cream bg
+   Differentiator: Split-display typography with leaf motif, 
+   glass-card overlaps on scan results
+*/
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+
+    /* Backgrounds — warm botanical paper */
+    --background: 0.975 0.008 95;
+    --foreground: 0.18 0.04 150;
+
+    /* Cards — slightly elevated ivory */
+    --card: 0.99 0.004 90;
+    --card-foreground: 0.18 0.04 150;
+
+    /* Popover */
+    --popover: 0.99 0.004 90;
+    --popover-foreground: 0.18 0.04 150;
+
+    /* Primary — deep forest green */
+    --primary: 0.38 0.12 145;
+    --primary-foreground: 0.975 0.006 90;
+
+    /* Secondary — sage muted */
+    --secondary: 0.92 0.025 145;
+    --secondary-foreground: 0.3 0.1 145;
+
+    /* Muted */
+    --muted: 0.94 0.015 130;
+    --muted-foreground: 0.5 0.04 145;
+
+    /* Accent — warm amber for CTAs */
+    --accent: 0.78 0.14 75;
+    --accent-foreground: 0.15 0.04 50;
+
+    /* Destructive */
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 0.985 0 0;
+
+    /* Borders */
+    --border: 0.88 0.03 140;
+    --input: 0.88 0.03 140;
+    --ring: 0.38 0.12 145;
+
+    /* Severity colors */
+    --severity-low: 0.72 0.18 145;
+    --severity-low-fg: 0.99 0.004 90;
+    --severity-medium: 0.78 0.17 72;
+    --severity-medium-fg: 0.15 0.04 50;
+    --severity-high: 0.68 0.19 42;
+    --severity-high-fg: 0.99 0.004 90;
+    --severity-critical: 0.58 0.22 25;
+    --severity-critical-fg: 0.99 0.004 90;
+
+    /* Charts */
+    --chart-1: 0.55 0.18 145;
+    --chart-2: 0.65 0.16 72;
+    --chart-3: 0.45 0.14 200;
+    --chart-4: 0.7 0.2 42;
+    --chart-5: 0.5 0.12 280;
+
+    /* Sidebar */
+    --sidebar: 0.22 0.06 150;
+    --sidebar-foreground: 0.92 0.02 140;
+    --sidebar-primary: 0.65 0.18 145;
+    --sidebar-primary-foreground: 0.99 0.004 90;
+    --sidebar-accent: 0.3 0.08 150;
+    --sidebar-accent-foreground: 0.92 0.02 140;
+    --sidebar-border: 0.3 0.06 150;
+    --sidebar-ring: 0.55 0.14 145;
+  }
+
+  .dark {
+    --background: 0.14 0.03 160;
+    --foreground: 0.94 0.02 130;
+
+    --card: 0.18 0.04 155;
+    --card-foreground: 0.94 0.02 130;
+
+    --popover: 0.2 0.04 155;
+    --popover-foreground: 0.94 0.02 130;
+
+    --primary: 0.62 0.2 145;
+    --primary-foreground: 0.1 0.03 160;
+
+    --secondary: 0.24 0.05 155;
+    --secondary-foreground: 0.85 0.03 140;
+
+    --muted: 0.22 0.04 158;
+    --muted-foreground: 0.65 0.05 145;
+
+    --accent: 0.72 0.18 75;
+    --accent-foreground: 0.12 0.04 50;
+
+    --destructive: 0.65 0.22 25;
+    --destructive-foreground: 0.99 0.004 90;
+
+    --border: 0.28 0.04 155;
+    --input: 0.28 0.04 155;
+    --ring: 0.62 0.2 145;
+
+    --severity-low: 0.55 0.2 145;
+    --severity-low-fg: 0.99 0.004 90;
+    --severity-medium: 0.65 0.17 72;
+    --severity-medium-fg: 0.15 0.04 50;
+    --severity-high: 0.6 0.2 42;
+    --severity-high-fg: 0.99 0.004 90;
+    --severity-critical: 0.55 0.22 25;
+    --severity-critical-fg: 0.99 0.004 90;
+
+    --chart-1: 0.62 0.2 145;
+    --chart-2: 0.65 0.16 72;
+    --chart-3: 0.55 0.18 200;
+    --chart-4: 0.68 0.2 42;
+    --chart-5: 0.58 0.16 280;
+
+    --sidebar: 0.12 0.03 162;
+    --sidebar-foreground: 0.88 0.02 140;
+    --sidebar-primary: 0.62 0.2 145;
+    --sidebar-primary-foreground: 0.99 0.004 90;
+    --sidebar-accent: 0.2 0.05 158;
+    --sidebar-accent-foreground: 0.88 0.02 140;
+    --sidebar-border: 0.24 0.04 158;
+    --sidebar-ring: 0.5 0.14 145;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: "Bricolage Grotesque", sans-serif;
+  }
+}
+
+/* ===== CUSTOM UTILITIES ===== */
+@layer utilities {
+  .severity-low {
+    background-color: oklch(var(--severity-low));
+    color: oklch(var(--severity-low-fg));
+  }
+  .severity-medium {
+    background-color: oklch(var(--severity-medium));
+    color: oklch(var(--severity-medium-fg));
+  }
+  .severity-high {
+    background-color: oklch(var(--severity-high));
+    color: oklch(var(--severity-high-fg));
+  }
+  .severity-critical {
+    background-color: oklch(var(--severity-critical));
+    color: oklch(var(--severity-critical-fg));
+  }
+
+  .text-severity-low { color: oklch(var(--severity-low)); }
+  .text-severity-medium { color: oklch(var(--severity-medium)); }
+  .text-severity-high { color: oklch(var(--severity-high)); }
+  .text-severity-critical { color: oklch(var(--severity-critical)); }
+
+  .bg-severity-low { background-color: oklch(var(--severity-low)); }
+  .bg-severity-medium { background-color: oklch(var(--severity-medium)); }
+  .bg-severity-high { background-color: oklch(var(--severity-high)); }
+  .bg-severity-critical { background-color: oklch(var(--severity-critical)); }
+
+  .font-display {
+    font-family: "Bricolage Grotesque", sans-serif;
+  }
+
+  .font-sans {
+    font-family: "General Sans", sans-serif;
+  }
+
+  .font-mono {
+    font-family: "Geist Mono", monospace;
+  }
+
+  /* Botanical noise texture overlay */
+  .bg-botanical-noise {
+    position: relative;
+  }
+  .bg-botanical-noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Glass card effect */
+  .glass-card {
+    background: oklch(var(--card) / 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid oklch(var(--border) / 0.6);
+  }
+
+  /* Confidence bar accent */
+  .confidence-bar-fill {
+    background: linear-gradient(90deg, oklch(var(--primary)), oklch(var(--accent)));
+  }
+}
+
+/* Scan drop zone hover state */
+.drop-zone-active {
+  border-color: oklch(var(--primary));
+  background-color: oklch(var(--secondary));
+  transform: scale(1.01);
+}
+
+/* Chat bubble styles */
+.chat-bubble-user {
+  background-color: oklch(var(--primary));
+  color: oklch(var(--primary-foreground));
+  border-radius: 18px 18px 4px 18px;
+}
+
+.chat-bubble-bot {
+  background-color: oklch(var(--card));
+  color: oklch(var(--card-foreground));
+  border: 1px solid oklch(var(--border));
+  border-radius: 18px 18px 18px 4px;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: oklch(var(--muted) / 0.3);
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(var(--border));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--primary) / 0.4);
+}
