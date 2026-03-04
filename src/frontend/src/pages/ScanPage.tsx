@@ -9,12 +9,14 @@ import {
   Loader2,
   RotateCcw,
   Scan,
+  SearchX,
   Upload,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useCallback, useRef, useState } from "react";
 import { SeverityBadge } from "../components/app/SeverityBadge";
 import { type Prediction, simulateCNN } from "../utils/cnnSimulator";
+import { detectLeaf } from "../utils/leafDetector";
 import { saveEntry } from "../utils/scanHistory";
 
 function fileToDataUrl(file: File): Promise<string> {
@@ -26,7 +28,7 @@ function fileToDataUrl(file: File): Promise<string> {
   });
 }
 
-type PageState = "idle" | "analyzing" | "results";
+type PageState = "idle" | "validating" | "not_found" | "analyzing" | "results";
 
 export function ScanPage() {
   const [pageState, setPageState] = useState<PageState>("idle");
@@ -41,8 +43,16 @@ export function ScanPage() {
     setSelectedFile(file);
     const dataUrl = await fileToDataUrl(file);
     setPreviewUrl(dataUrl);
-    setPageState("idle");
+    setPageState("validating");
     setPredictions([]);
+
+    // Validate: check if image is a plant leaf
+    const detection = await detectLeaf(file);
+    if (!detection.isLeaf) {
+      setPageState("not_found");
+    } else {
+      setPageState("idle");
+    }
   }, []);
 
   const handleDrop = useCallback(
@@ -68,7 +78,7 @@ export function ScanPage() {
   };
 
   const handleAnalyze = async () => {
-    if (!selectedFile || !previewUrl) return;
+    if (!selectedFile || !previewUrl || pageState === "not_found") return;
     setPageState("analyzing");
 
     // Simulated 1.5s CNN processing
@@ -219,13 +229,15 @@ export function ScanPage() {
                   }
                 }}
                 tabIndex={selectedFile ? -1 : 0}
-                aria-label="Drop plant image here or click to upload"
+                aria-label="Drop plant leaf image here or click to upload"
                 className={`relative border-2 border-dashed rounded-2xl transition-all duration-300 cursor-pointer ${
                   isDragOver
                     ? "border-primary bg-primary/5 scale-[1.01]"
-                    : selectedFile
-                      ? "border-primary/40 bg-secondary/30 cursor-default"
-                      : "border-border hover:border-primary/50 hover:bg-secondary/20"
+                    : pageState === "not_found"
+                      ? "border-destructive/50 bg-destructive/5 cursor-default"
+                      : selectedFile
+                        ? "border-primary/40 bg-secondary/30 cursor-default"
+                        : "border-border hover:border-primary/50 hover:bg-secondary/20"
                 }`}
               >
                 <input
@@ -234,7 +246,7 @@ export function ScanPage() {
                   accept="image/*"
                   className="hidden"
                   onChange={handleInputChange}
-                  aria-label="Upload plant image"
+                  aria-label="Upload plant leaf image"
                 />
 
                 {previewUrl ? (
@@ -242,21 +254,43 @@ export function ScanPage() {
                     <div className="relative flex-shrink-0">
                       <img
                         src={previewUrl}
-                        alt="Selected plant"
-                        className="w-48 h-48 object-cover rounded-xl shadow-card"
+                        alt="Selected plant leaf"
+                        className={`w-48 h-48 object-cover rounded-xl shadow-card ${
+                          pageState === "not_found"
+                            ? "opacity-50 grayscale"
+                            : ""
+                        }`}
                       />
-                      <div className="absolute inset-0 rounded-xl ring-2 ring-primary/30" />
+                      <div
+                        className={`absolute inset-0 rounded-xl ring-2 ${
+                          pageState === "not_found"
+                            ? "ring-destructive/50"
+                            : "ring-primary/30"
+                        }`}
+                      />
+                      {pageState === "not_found" && (
+                        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/30">
+                          <SearchX className="w-10 h-10 text-white drop-shadow" />
+                        </div>
+                      )}
                     </div>
                     <div className="flex-1 text-center sm:text-left">
                       <p className="font-semibold text-foreground mb-1">
                         {selectedFile?.name}
                       </p>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {selectedFile
-                          ? `${(selectedFile.size / 1024).toFixed(1)} KB`
-                          : ""}{" "}
-                        · Ready for analysis
-                      </p>
+                      {pageState === "not_found" ? (
+                        <p className="text-sm text-destructive font-medium mb-4">
+                          Not a plant leaf image. Please upload a clear photo of
+                          a plant leaf.
+                        </p>
+                      ) : (
+                        <p className="text-sm text-muted-foreground mb-4">
+                          {selectedFile
+                            ? `${(selectedFile.size / 1024).toFixed(1)} KB`
+                            : ""}{" "}
+                          · Ready for analysis
+                        </p>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"
@@ -289,10 +323,10 @@ export function ScanPage() {
                     <p className="font-display font-semibold text-xl text-foreground mb-2">
                       {isDragOver
                         ? "Drop to upload"
-                        : "Drop your plant photo here"}
+                        : "Drop your plant leaf photo here"}
                     </p>
                     <p className="text-muted-foreground text-sm mb-5">
-                      or click to browse · JPG, PNG, WEBP supported
+                      Plant leaf images only · JPG, PNG, WEBP supported
                     </p>
                     <Button
                       data-ocid="scan.upload_button"
@@ -308,19 +342,76 @@ export function ScanPage() {
                 )}
               </div>
 
+              {/* Not Found state banner */}
+              <AnimatePresence>
+                {pageState === "not_found" && (
+                  <motion.div
+                    data-ocid="scan.error_state"
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex items-start gap-4 bg-destructive/8 border border-destructive/25 rounded-2xl p-5"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-destructive/15 flex items-center justify-center flex-shrink-0">
+                      <SearchX className="w-5 h-5 text-destructive" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground mb-1">
+                        Plant Leaf Not Found
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        The uploaded image does not appear to be a plant leaf.
+                        This tool only analyzes plant leaf photos. Please upload
+                        a clear, well-lit photo of a plant leaf to detect
+                        diseases.
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Validating state indicator */}
+              {pageState === "validating" && (
+                <div
+                  data-ocid="scan.loading_state"
+                  className="flex flex-col items-center gap-3 py-4"
+                >
+                  <div className="w-full max-w-xs">
+                    <Progress
+                      value={undefined}
+                      className="h-1.5 animate-pulse"
+                    />
+                  </div>
+                  <p className="text-sm text-muted-foreground font-mono">
+                    Validating image...
+                  </p>
+                </div>
+              )}
+
               {/* Analyze button */}
               <div className="flex justify-center">
                 <Button
                   data-ocid="scan.analyze_button"
                   size="lg"
                   onClick={handleAnalyze}
-                  disabled={!selectedFile || pageState === "analyzing"}
+                  disabled={
+                    !selectedFile ||
+                    pageState === "analyzing" ||
+                    pageState === "validating" ||
+                    pageState === "not_found"
+                  }
                   className="px-10 py-6 text-base font-semibold shadow-botanical"
                 >
                   {pageState === "analyzing" ? (
                     <>
                       <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                       Analyzing...
+                    </>
+                  ) : pageState === "validating" ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Validating...
                     </>
                   ) : (
                     <>

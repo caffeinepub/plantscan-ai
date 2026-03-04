@@ -14,7 +14,7 @@ export function Footer() {
             <Leaf className="w-3 h-3 text-primary" />
           </div>
           <span className="font-display font-semibold text-foreground text-xs tracking-wide">
-            PlantScan AI
+            Plant Beta AI
           </span>
           <span className="text-xs">— Protect your crops with AI insights</span>
         </div>

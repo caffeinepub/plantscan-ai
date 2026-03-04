@@ -10,6 +10,7 @@ import { Footer } from "./components/app/Footer";
 import { Navigation } from "./components/app/Navigation";
 import { ChatPage } from "./pages/ChatPage";
 import { HistoryPage } from "./pages/HistoryPage";
+import { HomePage } from "./pages/HomePage";
 import { LibraryPage } from "./pages/LibraryPage";
 import { ScanPage } from "./pages/ScanPage";
 
@@ -28,9 +29,15 @@ const rootRoute = createRootRoute({
 });
 
 // Individual routes
-const indexRoute = createRoute({
+const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
+  component: HomePage,
+});
+
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/scan",
   component: ScanPage,
 });
 
@@ -53,6 +60,7 @@ const chatRoute = createRoute({
 });
 
 const routeTree = rootRoute.addChildren([
+  homeRoute,
   indexRoute,
   libraryRoute,
   historyRoute,

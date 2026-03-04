@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import {
   BookOpen,
   History,
+  Home,
   Leaf,
   Menu,
   MessageCircle,
@@ -12,7 +13,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 
 const navItems = [
-  { to: "/", label: "Scan", icon: ScanLine, ocid: "nav.scan_link" },
+  { to: "/", label: "Home", icon: Home, ocid: "nav.home_link" },
+  { to: "/scan", label: "Scan", icon: ScanLine, ocid: "nav.scan_link" },
   {
     to: "/library",
     label: "Library",
@@ -46,14 +48,14 @@ export function Navigation() {
           <Link
             to="/"
             className="flex items-center gap-2.5 group"
-            aria-label="PlantScan AI home"
+            aria-label="Plant Beta home"
           >
             <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-botanical transition-all group-hover:scale-105">
               <Leaf className="w-5 h-5 text-primary-foreground" />
             </div>
             <div className="flex flex-col leading-none">
               <span className="font-display font-bold text-lg text-foreground tracking-tight">
-                PlantScan
+                Plant Beta
               </span>
               <span className="text-[10px] font-mono text-muted-foreground tracking-widest uppercase">
                 AI
@@ -64,8 +66,7 @@ export function Navigation() {
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map(({ to, label, icon: Icon, ocid }) => {
-              const isActive =
-                to === "/" ? pathname === "/" : pathname.startsWith(to);
+              const isActive = pathname === to;
               return (
                 <Link
                   key={to}
@@ -112,8 +113,7 @@ export function Navigation() {
           >
             <nav className="container mx-auto px-4 py-3 flex flex-col gap-1">
               {navItems.map(({ to, label, icon: Icon, ocid }) => {
-                const isActive =
-                  to === "/" ? pathname === "/" : pathname.startsWith(to);
+                const isActive = pathname === to;
                 return (
                   <Link
                     key={to}
